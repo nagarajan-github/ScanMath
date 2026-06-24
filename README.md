@@ -21,8 +21,14 @@ It understands two layouts from your sample image:
 |-----------------------|----------------------|--------|
 | `10 + 30 + 40`        | `10 + 30 + 40`       | `80`   |
 | `100` / `+25` / `+45` / `-20` (stacked) | `100 + 25 + 45 - 20` | `150`  |
+| `100` / `25` / `45` / `20` (plain column, no symbols) | `100 + 25 + 45 + 20` | `190`  |
+| `10 20 30` (no symbols) | `10 + 20 + 30`     | `60`   |
 
-Two problems separated by an `(or)` marker are solved independently.
+**No-symbol rule:** when two numbers sit next to each other with no operator
+between them, they are added. So a plain column or a row of numbers is summed.
+
+Two problems separated by an `(or)` marker are solved independently, and two
+self-contained equations on separate lines stay separate.
 
 It also handles `× ÷ − +`, parentheses, decimals, `%`, powers (`^`) and operator
 precedence (e.g. `2 + 3 * 4 = 14`).
@@ -89,10 +95,15 @@ Push this project to a GitHub repo. The included
 passed to `MathParser`, which:
 
 - normalizes OCR glyphs (`× x · → *`, `÷ → /`, `− – → -`, drops thousands commas);
-- stitches stacked vertical sums into one inline expression (a line that starts
-  with an operator continues the line above it);
-- splits independent problems on blank lines or an `(or)` marker;
+- repairs misread digits (e.g. the letter `O → 0`, `l → 1`, `S → 5`) so numbers
+  aren't lost;
+- stitches stacked/column numbers into one expression, inserting `+` between any
+  two adjacent numbers that have no operator between them;
+- keeps self-contained equations separate and splits on blank lines / `(or)`;
 - evaluates each with `ExpressionEvaluator` and formats whole numbers cleanly.
+
+The capture uses CameraX's highest-resolution strategy, and the result sheet
+shows the exact recognized text so you can see if anything was misread.
 
 ## Tips for best accuracy
 
